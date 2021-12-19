@@ -1,0 +1,36 @@
+---
+            
+- name: Configuration | Append NXLog user to the system groups
+  user:
+    name: "{{ nxlog_user }}"
+    groups: "{{ nxlog_system_groups|list }}"
+    append: true
+
+- name: Configuration | Change ownership spool directory for NXLog user 
+  file:
+    path: "{{ nxlog_spool_dir }}"
+    state: directory
+    recurse: true
+    owner: "{{ nxlog_user }}"
+    group: "{{ nxlog_user_group }}"
+    
+- name: Configuration | Copy predefined config for graylog-sidecar
+  template:
+    src: ".{{ graylog_sidecar_config_dir }}/sidecar.yml.j2"
+    dest: "{{ graylog_sidecar_config_dir }}/sidecar.yml"
+    mode : 0644
+    force: true
+  notify:
+    - Restart graylog-sidecar service
+  
+- name: Configuration | Copy a journalctl helper script for NXLog
+  template:
+    src: ".{{ nxlog_input_modules_dir }}/systemd-journal-tail.sh.j2"
+    dest: "{{ nxlog_input_modules_dir }}/systemd-journal-tail.sh"
+    owner: "{{ nxlog_user }}"
+    group: "{{ nxlog_user_group }}"
+    mode: 0554
+    force: true
+
+- name: Configuration | Run Configuration step handlers
+  meta: flush_handlers

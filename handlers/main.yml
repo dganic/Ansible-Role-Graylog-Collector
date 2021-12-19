@@ -1,0 +1,20 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- name: Install graylog-sidecar service
+  shell:
+    cmd: graylog-sidecar -service install
+  when: ("graylog-sidecar.service" not in ansible_facts.services)
+  
+- name: Stop and disable NXLog service
+  service:
+    name: nxlog
+    state: stopped
+    enabled: false
+
+- name: Restart graylog-sidecar service
+  service:
+    name: graylog-sidecar
+    state: restarted
+    enabled: true

@@ -1,0 +1,9 @@
+
+---
+
+- name: Checking status of services | Ensure graylog-collector services are in the right state
+  service:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+  loop: "{{ services }}"

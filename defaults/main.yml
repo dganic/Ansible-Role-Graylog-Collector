@@ -1,0 +1,32 @@
+---
+
+# Define paths
+tmp_dir: /tmp/
+nxlog_spool_dir: /var/spool/nxlog
+graylog_sidecar_config_dir: /etc/graylog/sidecar
+nxlog_input_modules_dir: /usr/lib/nxlog/modules/input
+
+# Define version pakages
+graylog_sidecar_version: 1.1.0-1
+nxlog_version: 2.11.2190
+
+# Define names pakages
+graylog_sidecar_debian_like_pkg: "graylog-sidecar_{{ graylog_sidecar_version }}_amd64.deb"
+nxlog_debian_buster_pkg: "nxlog-ce_{{ nxlog_version }}_debian_buster_amd64.deb"
+nxlog_debian_bullseye_pkg: "nxlog-ce_{{ nxlog_version }}_debian_bullseye_amd64.deb"
+nxlog_ubuntu_focal_pkg: "nxlog-ce_{{ nxlog_version }}_ubuntu_focal_amd64.deb"
+
+# Define NXLog user, group and system groups where it should belong    
+nxlog_user: nxlog
+nxlog_user_group: nxlog
+nxlog_system_groups:
+    - adm
+    - systemd-journal
+
+# Graylog-sidecar config properties
+graylog_sidecar_server_url: http://graylog_server:9000/api/
+graylog_sidecar_server_api_token: graylog_api_token
+
+# NXLog journalctl helper script config properties
+nxlog_journalctl_FIELDS: MESSAGE,PRIORITY,SYSLOG_FACILITY,SYSLOG_IDENTIFIER,__REALTIME_TIMESTAMP,_TRANSPORT,_CMDLINE,_SYSTEMD_UNIT,UNIT,USER_UNIT,USER,USER_ID,_KERNEL_DEVICE,_KERNEL_SUBSYSTEM
+nxlog_journalctl_PRIORITY: 0..7 # "emerg" (0), "alert" (1), "crit" (2), "err" (3), "warning" (4), "notice" (5), "info" (6), "debug" (7)

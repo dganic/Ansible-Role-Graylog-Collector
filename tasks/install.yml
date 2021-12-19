@@ -1,0 +1,35 @@
+---
+
+- name: Installation | Populate package facts
+  package_facts:
+
+- name: Installation | Copy packages to temp dir
+  copy:
+    src: "{{ item.pkg }}"
+    dest: "{{ tmp_dir }}"
+  when: (not item.name in ansible_facts.packages) or
+        (ansible_facts.packages[item.name][0].version is version(item.version, '<', version_type='semver'))
+  register: packages_copied
+  loop: "{{ packages }}"
+  
+- name: Installation | Install packages
+  apt:
+    deb: "{{ tmp_dir }}{{ item.pkg }}"
+  notify: 
+    - "{{ item.notify }}"
+  when: packages_copied.results[index].changed
+  loop: "{{ packages|flatten(levels=1) }}"
+  loop_control:
+    index_var: index
+
+- name: Installation | Clear packages from temp dir
+  file:
+    path: "{{ tmp_dir }}{{ item.pkg }}"
+    state: absent
+  loop: "{{ packages }}"
+
+- name: Installation | Populate service facts
+  service_facts:
+
+- name: Installation | Run Installation step handlers
+  meta: flush_handlers

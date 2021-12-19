@@ -1,0 +1,30 @@
+---
+
+# Define supported OS for the role 
+role_supported_os:
+  - "Debian-buster"
+  - "Debian-bullseye"
+  - "Ubuntu-focal"
+
+# Define the name of NXLog package based on an ansible facts about OS
+__nxlog_pkg: "{{ lookup('vars', 'nxlog_' + ansible_distribution|lower + '_' + ansible_distribution_release + '_pkg') }}"
+
+# Define the packages name
+packages:
+  - name: graylog-sidecar
+    pkg: "{{ graylog_sidecar_debian_like_pkg }}"
+    version: "{{ graylog_sidecar_version }}"
+    notify: Install graylog-sidecar service
+  - name: nxlog-ce
+    pkg: "{{ __nxlog_pkg }}"
+    version: "{{ nxlog_version }}"
+    notify: Stop and disable NXLog service
+
+# Define the services name, state and enable status
+services:
+  - name: graylog-sidecar
+    enabled: true
+    state: started
+  - name: nxlog
+    enabled: false
+    state: stopped
